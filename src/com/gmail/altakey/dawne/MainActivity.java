@@ -28,22 +28,26 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Selection;
 import android.text.Spannable;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
     protected View rootView;
     protected TextView textView;
-    protected View searchBar;
+    PopupWindow searchWindow;
+
     protected EditText searchField;
     protected int selectionStart;
     protected int selectionEnd;
@@ -138,17 +142,6 @@ public class MainActivity extends Activity {
             this.textView.setOnKeyListener(dummyKeyListener);
         }
         this.textView.setSaveEnabled(false);
-
-        this.searchBar = findViewById(R.id.search);
-        this.searchField = (EditText) findViewById(R.id.edittext);
-        this.searchField.setOnKeyListener(searchKeyListener);
-
-        ImageButton cancelButton = (ImageButton) findViewById(R.id.cancel);
-        cancelButton.setOnClickListener(cancelButtonListener);
-        ImageButton prevButton = (ImageButton) findViewById(R.id.previous);
-        prevButton.setOnClickListener(prevButtonListener);
-        ImageButton nextButton = (ImageButton) findViewById(R.id.next);
-        nextButton.setOnClickListener(nextButtonListener);
 
         this.restyle();
     }
@@ -271,32 +264,42 @@ public class MainActivity extends Activity {
                 .toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(searchWindow != null) {
+            searchWindow.dismiss();
+            searchWindow = null;
+        }
+    }
+
+    final int[] tempCoords = new int[2];
+
+
+
     @SuppressLint("NewApi")
     void showSearchBar(boolean shown) {
-        if (searchBar == null) {
-            throw new IllegalStateException();
-        }
         if (shown) {
-            searchBar.setVisibility(View.VISIBLE);
-            searchBar.requestFocus();
-            showSoftKeyBoard();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                if (!titleHidden) {
-                    final ActionBar actionBar = getActionBar();
-                    rootView.setPadding(0, 0, 0, 0);
-                    actionBar.hide();
-                }
+            if(searchWindow == null) {
+                View searchBar = getLayoutInflater().inflate(R.layout.search, null);
+                searchWindow = new PopupWindow(searchBar, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                searchWindow.setFocusable(true);
+
+                this.searchField = (EditText) searchBar.findViewById(R.id.edittext);
+                this.searchField.setOnKeyListener(searchKeyListener);
+
+                ImageButton cancelButton = (ImageButton) searchBar.findViewById(R.id.cancel);
+                cancelButton.setOnClickListener(cancelButtonListener);
+                ImageButton prevButton = (ImageButton) searchBar.findViewById(R.id.previous);
+                prevButton.setOnClickListener(prevButtonListener);
+                ImageButton nextButton = (ImageButton) searchBar.findViewById(R.id.next);
+                nextButton.setOnClickListener(nextButtonListener);
             }
+
+            rootView.getLocationInWindow(tempCoords);
+            searchWindow.showAtLocation(rootView, Gravity.NO_GRAVITY, 0, tempCoords[1]);
         } else {
-            hideSoftKeyboard();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                if (!titleHidden) {
-                    final ActionBar actionBar = getActionBar();
-                    rootView.setPadding(0, actionBar.getHeight(), 0, 0);
-                    actionBar.show();
-                }
-            }
-            searchBar.setVisibility(View.GONE);
+            searchWindow.dismiss();
         }
     }
 

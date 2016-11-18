@@ -3,52 +3,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <RelativeLayout
-        android:id="@+id/search"
-        style="@android:style/ButtonBar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:gravity="center_vertical"
-        android:visibility="gone" >
-
-        <ImageButton
-            android:id="@+id/cancel"
-            android:layout_width="48dip"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/cancel" />
-
-        <ImageButton
-            android:id="@+id/next"
-            android:layout_width="48dip"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/cancel"
-            android:src="@drawable/next" />
-
-        <ImageButton
-            android:id="@+id/previous"
-            android:layout_width="48dip"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/next"
-            android:src="@drawable/previous" />
-
-        <EditText
-            android:id="@+id/edittext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_margin="1dip"
-            android:layout_toLeftOf="@id/previous"
-            android:hint="@string/menu_title_main_search"
-            android:singleLine="true" />
-    </RelativeLayout>
 
     <ScrollView
         android:id="@+id/view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/search" >
+        android:layout_alignParentTop="true">
 
         <EditText
             android:id="@+id/textview"
